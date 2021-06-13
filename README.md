@@ -8,12 +8,12 @@ python3 seutp.py install
 ```
 ### From PyPI
 ```bash
-pip3 install dope
+pip3 install dope3
 ```
 ## Using the DOPE API
 Import DOPE
 ```python
-from dope import DOPE
+from dope3 import DOPE
 ```
 Once the dope package is imported you need to create the Dope class and initialize it with the required parameters
 The parameters include:
@@ -30,7 +30,7 @@ The parameters include:
 ## Using the DOPE2 API
 Import DOPE2
 ```python
-from dope import DOPE2
+from dope3 import DOPE2
 ```
 Once the dope package is imported you need to create the Dope class and initialize it with the required parameters
 The parameters include:

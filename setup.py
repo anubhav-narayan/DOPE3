@@ -1,4 +1,4 @@
-from setuptools import setup,find_packages
+from setuptools import setup, find_packages
 setup(
     name='DOPE',
     version='2.0.3',
@@ -9,7 +9,13 @@ setup(
     install_requires=[
         'pycryptodome>=3.9',
         'dill',
-        'bchlib',
-        'pickle5'
+        'bchlib'
+    ],
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'Operating System :: OS Independent',
+        'Topic :: Security :: Cryptography'
     ]
 )
