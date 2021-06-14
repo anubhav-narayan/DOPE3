@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dope3"
-version = "2.0.4"
+version = "2.0.5"
 description = "Python3 Implementation of DOPE Encryption"
 authors = ["Anubhav Mattoo <anubhavmattoo@outlook.com>"]
 license = "GPL-3.0-or-later"
