@@ -21,11 +21,9 @@ jobs:
           name: Build Distro  
           command: |
                 poetry build
-                poetry install
       - run:
           name: Run Tests
           command: |
-                  poetry shell
                   pip3 install pytest pytest-cov
                   cp -r dope3 tests/dope3
                   pytest --cov=dope3 --cov-report=html
