@@ -1,0 +1,31 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@1.4.0
+  codecov: codecov/codecov@1.0.2
+
+workflows:
+  main:
+    jobs:
+      - build
+
+
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.6
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+      - run:
+          name: Build Distro  
+          command: poetry build
+      - run:
+          name: Run Tests
+          command: |
+                  pip3 install pytest | 
+                  pytest --cov=dope3 --cov-report=xml
+      - codecov/upload:
+          file: ./coverage.xml
+  
