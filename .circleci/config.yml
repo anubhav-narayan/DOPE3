@@ -23,7 +23,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-                  pip3 install pytest
+                  pip3 install pytest pytest-cov 
                   pytest --cov=dope3 --cov-report=html
       - store_artifacts:
           path: htmlcov
