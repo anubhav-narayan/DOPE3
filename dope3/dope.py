@@ -3,7 +3,7 @@ DOPE Class
 '''
 
 
-__version__ = "2.0.3"
+__version__ = "2.1.0"
 __author__ = "Anubhav Mattoo"
 
 from Crypto.PublicKey import RSA
@@ -483,8 +483,8 @@ class DOPE():
             if self.__aes_mode in ['SIV', 'GCM']:
                 header = oaep_decrypt(self.__rsa, packet['header'])
                 decoder = AES.new(key,
-                    AES_MODE_LOOKUP[self.__aes_mode],
-                    nonce=header[4:])
+                                  AES_MODE_LOOKUP[self.__aes_mode],
+                                  nonce=header[4:])
                 decoder.update(header[:4])
                 p_data = decoder.decrypt_and_verify(packet['data'],
                                                     packet['tag'])
@@ -742,6 +742,7 @@ class DOPE2(object):
                 pad = int.from_bytes(packet['pad_len'], 'big')
                 data += p_data[:-pad] if pad != 0 else p_data
             else:
+                header = packet['header']
                 decoder = AES.new(key, AES_MODE_LOOKUP[self.__aes_mode],
                                   iv=header[4:])
                 p_data = decoder.decrypt(packet['data'])
