@@ -21,11 +21,11 @@ jobs:
           name: Build Distro  
           command: |
                 poetry build
+                poetry install
       - run:
           name: Run Tests
           command: |
-                  poetry add pytest pytest-cov
-                  poetry build
+                  pip3 install pytest pytest-cov
                   pytest --cov=dope3 --cov-report=html
       - store_artifacts:
           path: htmlcov
