@@ -25,7 +25,8 @@ jobs:
       - run:
           name: Run Tests
           command: |
-                  pip3 install pytest pytest-cov pycryptodome 
+                  poetry shell
+                  pip3 install pytest pytest-cov
                   cp -r dope3 tests/dope3
                   pytest --cov=dope3 --cov-report=html
       - store_artifacts:
