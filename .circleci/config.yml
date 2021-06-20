@@ -24,8 +24,8 @@ jobs:
       - run:
           name: Run Tests
           command: |
-                  pip3 install pytest | 
-                  pytest --cov=dope3 --cov-report=xml
-      - codecov/upload:
-          file: ./coverage.xml
+                  pip3 install pytest
+                  pytest --cov=dope3 --cov-report=html
+      - store_artifacts:
+          path: htmlcov
   
