@@ -3,7 +3,7 @@ DOPE Class
 '''
 
 
-__version__ = "2.1.0"
+__version__ = "3.1.0"
 __author__ = "Anubhav Mattoo"
 
 from Crypto.PublicKey import RSA
@@ -14,7 +14,7 @@ from Crypto.Signature import pss, pkcs1_15
 import bchlib
 import base64
 from typing import Union
-from hashlib import blake2b, blake2s
+from hashlib import blake2b, blake2s, shake_256
 from dill import loads, dumps
 from gzip import compress, decompress
 
@@ -27,7 +27,7 @@ AES_MODE_LOOKUP = {
 }
 RATCHET_MODE_LOOKUP = {
     "BLAKE0x0": 0x0,
-    "BLAKEx0x": 0x1,
+    "SHAKE0x0": 0x1,
 }
 HMAC_LOOKUP = {
     "SHA256": SHA256,
@@ -48,60 +48,60 @@ KEY_MODE_LOOKUP = {
 DOPE_HIGHER_LOOKUP = {
     # Higher Byte
     (1024, "GCM", "BLAKE0x0"): b'\x00',
-    (1024, "GCM", "BLAKEx0x"): b'\x01',
+    (1024, "GCM", "SHAKE0x0"): b'\x01',
     (1024, "SIV", "BLAKE0x0"): b'\x04',
-    (1024, "SIV", "BLAKEx0x"): b'\x05',
+    (1024, "SIV", "SHAKE0x0"): b'\x05',
     (1024, "CBC", "BLAKE0x0"): b'\x08',
-    (1024, "CBC", "BLAKEx0x"): b'\x09',
+    (1024, "CBC", "SHAKE0x0"): b'\x09',
     (1024, "OFB", "BLAKE0x0"): b'\x0C',
-    (1024, "OFB", "BLAKEx0x"): b'\x0D',
+    (1024, "OFB", "SHAKE0x0"): b'\x0D',
 
     (2048, "GCM", "BLAKE0x0"): b'\x10',
-    (2048, "GCM", "BLAKEx0x"): b'\x11',
+    (2048, "GCM", "SHAKE0x0"): b'\x11',
     (2048, "SIV", "BLAKE0x0"): b'\x14',
-    (2048, "SIV", "BLAKEx0x"): b'\x15',
+    (2048, "SIV", "SHAKE0x0"): b'\x15',
     (2048, "CBC", "BLAKE0x0"): b'\x18',
-    (2048, "CBC", "BLAKEx0x"): b'\x19',
+    (2048, "CBC", "SHAKE0x0"): b'\x19',
     (2048, "OFB", "BLAKE0x0"): b'\x1C',
-    (2048, "OFB", "BLAKEx0x"): b'\x1D',
+    (2048, "OFB", "SHAKE0x0"): b'\x1D',
 
     (4096, "GCM", "BLAKE0x0"): b'\x20',
-    (4096, "GCM", "BLAKEx0x"): b'\x21',
+    (4096, "GCM", "SHAKE0x0"): b'\x21',
     (4096, "SIV", "BLAKE0x0"): b'\x24',
-    (4096, "SIV", "BLAKEx0x"): b'\x25',
+    (4096, "SIV", "SHAKE0x0"): b'\x25',
     (4096, "CBC", "BLAKE0x0"): b'\x28',
-    (4096, "CBC", "BLAKEx0x"): b'\x29',
+    (4096, "CBC", "SHAKE0x0"): b'\x29',
     (4096, "OFB", "BLAKE0x0"): b'\x2C',
-    (4096, "OFB", "BLAKEx0x"): b'\x2D',
+    (4096, "OFB", "SHAKE0x0"): b'\x2D',
 }
 INV_DOPE_HIGHER_LOOKUP = {
     # Higher Byte
     0x00: (1024, "GCM", "BLAKE0x0"),
-    0x01: (1024, "GCM", "BLAKEx0x"),
+    0x01: (1024, "GCM", "SHAKE0x0"),
     0x04: (1024, "SIV", "BLAKE0x0"),
-    0x05: (1024, "SIV", "BLAKEx0x"),
+    0x05: (1024, "SIV", "SHAKE0x0"),
     0x08: (1024, "CBC", "BLAKE0x0"),
-    0x09: (1024, "CBC", "BLAKEx0x"),
+    0x09: (1024, "CBC", "SHAKE0x0"),
     0x0C: (1024, "OFB", "BLAKE0x0"),
-    0x0D: (1024, "OFB", "BLAKEx0x"),
+    0x0D: (1024, "OFB", "SHAKE0x0"),
 
     0x10: (2048, "GCM", "BLAKE0x0"),
-    0x11: (2048, "GCM", "BLAKEx0x"),
+    0x11: (2048, "GCM", "SHAKE0x0"),
     0x14: (2048, "SIV", "BLAKE0x0"),
-    0x15: (2048, "SIV", "BLAKEx0x"),
+    0x15: (2048, "SIV", "SHAKE0x0"),
     0x18: (2048, "CBC", "BLAKE0x0"),
-    0x19: (2048, "CBC", "BLAKEx0x"),
+    0x19: (2048, "CBC", "SHAKE0x0"),
     0x1C: (2048, "OFB", "BLAKE0x0"),
-    0x1D: (2048, "OFB", "BLAKEx0x"),
+    0x1D: (2048, "OFB", "SHAKE0x0"),
 
     0x20: (4096, "GCM", "BLAKE0x0"),
-    0x21: (4096, "GCM", "BLAKEx0x"),
+    0x21: (4096, "GCM", "SHAKE0x0"),
     0x24: (4096, "SIV", "BLAKE0x0"),
-    0x25: (4096, "SIV", "BLAKEx0x"),
+    0x25: (4096, "SIV", "SHAKE0x0"),
     0x28: (4096, "CBC", "BLAKE0x0"),
-    0x29: (4096, "CBC", "BLAKEx0x"),
+    0x29: (4096, "CBC", "SHAKE0x0"),
     0x2C: (4096, "OFB", "BLAKE0x0"),
-    0x2D: (4096, "OFB", "BLAKEx0x"),
+    0x2D: (4096, "OFB", "SHAKE0x0"),
 }
 DOPE_LOWER_LOOKUP = {
     # Lower Byte
@@ -130,6 +130,13 @@ INV_DOPE_LOWER_LOOKUP = {
 def oaep_encrypt(key, data: bytes) -> bytes:
     '''
     PKCSv1.5 Encryption
+
+    Args:
+        key: RSA.PublicKey - Encryption Key
+        data: bytes - Data to Encrypt
+
+    Retruns:
+        bytes - Encrypted Data
     '''
     encryptor = PKCS1_v1_5.new(key)
     return encryptor.encrypt(data)
@@ -138,6 +145,13 @@ def oaep_encrypt(key, data: bytes) -> bytes:
 def oaep_decrypt(key, data: bytes) -> bytes:
     '''
     PKCSv1.5 Decryption
+
+    Args:
+        key: RSA.PublicKey - Decryption Key
+        data: bytes - Data to Decrypt
+
+    Retruns:
+        bytes - Decrypted Data
     '''
     decryptor = PKCS1_v1_5.new(key)
     return decryptor.decrypt(data, None)
@@ -349,7 +363,7 @@ class DOPE():
         Ratchet to Next Home Key
         '''
         self.__ratchet_home += 1
-        if self.__ratchet_home > 2 ** 128:
+        if self.__ratchet_home >= 2 ** 128:
             raise ValueError('Keys Exhausted')
         key = self.__hkdf_home.digest()
         self.__hkdf_home.update(key + bytes(ecc))
@@ -358,7 +372,7 @@ class DOPE():
         '''
         Ratchet to Next Home Key
         '''
-        if self.__ratchet_home > 2 ** 128:
+        if self.__ratchet_home >= 2 ** 128:
             raise ValueError('Keys Exhausted')
         key = self.__hkdf_home.digest()
         return key
@@ -368,7 +382,7 @@ class DOPE():
         Ratchet to Next End Key
         '''
         self.__ratchet_end += 1
-        if self.__ratchet_end > 2 ** 128:
+        if self.__ratchet_end >= 2 ** 128:
             raise ValueError('Keys Exhausted')
         key = self.__hkdf_end.digest()
         self.__hkdf_end.update(key + bytes(ecc))
@@ -377,7 +391,7 @@ class DOPE():
         '''
         Ratchet to Next End Key
         '''
-        if self.__ratchet_end > 2 ** 128:
+        if self.__ratchet_end >= 2 ** 128:
             raise ValueError('Keys Exhausted')
         key = self.__hkdf_end.digest()
         return key
@@ -387,14 +401,111 @@ class DOPE():
         Pack Data to DOPE Standard
         '''
         data_block = []
-        for x in range(0, len(data), 1280):
+        for x in range(0, len(data), 1276):
             pad_len = 0
-            if len(data[x:x+1280]) < 1280:
-                pad_len = 1280 - len(data[x:x+1280])
-            data_x = data[x:x+1280] + get_random_bytes(pad_len)
+            if len(data[x:x+1276]) < 1276:
+                pad_len = 1276 - len(data[x:x+1276])
+            data_x = data[x:x+1276] + get_random_bytes(pad_len)
             pad_len = pad_len.to_bytes(4, 'big')
             data_block.append(pad_len + data_x)
         return data_block
+
+    def serialize_packet(self, packet: dict) -> bytes:
+        block = packet['block'].to_bytes(16, 'big')
+        ecc = bytes(packet['ecc'])
+        return block\
+            + packet['header']\
+            + packet['data']\
+            + packet['tag']\
+            + ecc
+
+    def marshall_packet(self, packet: bytes) -> dict:
+        block = int.from_bytes(packet[:16], 'big')
+        ecc = packet[-self.__bch.ecc_bytes:]
+        tag = packet[-self.__bch.ecc_bytes - 16:-self.__bch.ecc_bytes]
+        data = packet[-self.__bch.ecc_bytes - 1296:-self.__bch.ecc_bytes - 16]
+        header = packet[16: -self.__bch.ecc_bytes - 1296]
+        return {
+            'block': block,
+            'header': header,
+            'data': data,
+            'tag': tag,
+            'ecc': ecc
+        }
+
+    def encrypt(self, data_block: bytes, counter: int = 0) -> bytes:
+        '''
+        Encrypt a Single Block
+        '''
+        if len(data_block) > 1280:
+            raise ValueError(f'Block too large: {len(data_block)}bytes')
+        key = self.key_end()
+        if self.__end_param['HFLAG'][1] in ['SIV', 'GCM']:
+            nonce = get_random_bytes(16)
+            encoder = AES.new(
+                key,
+                AES_MODE_LOOKUP[self.__end_param['HFLAG'][1]],
+                nonce=nonce
+            )
+            encoder.update(b'DOPE')
+            header = b'DOPE' + nonce
+            data, tag = encoder.encrypt_and_digest(data_block)
+            header = oaep_encrypt(self.__pan_key, header)
+            packet = {
+                'block': counter,
+                'header': header,
+                'data': data,
+                'tag': tag,
+                'ecc': self.__bch.encode(data)
+            }
+        else:
+            encoder = AES.new(
+                key,
+                AES_MODE_LOOKUP[self.__end_param['HFLAG'][1]]
+            )
+            header = b'DOPE' + encoder.iv
+            data = encoder.encrypt(data_block)
+            tag = blake2b(data_block).digest()[:16]
+            header = oaep_encrypt(self.__pan_key, header)
+            packet = {
+                'block': counter,
+                'header': header,
+                'data': data,
+                'tag': tag,
+                'ecc': self.__bch.encode(data)
+            }
+        self.ratchet_end(packet['ecc'])
+        return self.serialize_packet(packet)
+
+    def decrypt(self, data_block: bytes) -> bytes:
+        '''
+        Decrypt a Single Block
+        '''
+        key = self.key_home()
+        packet = self.marshall_packet(data_block)
+        if self.__aes_mode in ['SIV', 'GCM']:
+            header = oaep_decrypt(self.__rsa, packet['header'])
+            decoder = AES.new(key,
+                              AES_MODE_LOOKUP[self.__aes_mode],
+                              nonce=header[4:])
+            decoder.update(header[:4])
+            p_data = decoder.decrypt_and_verify(packet['data'],
+                                                packet['tag'])
+            if self.__ratchet_mode == 'BLAKE0x0':
+                _, p_data, ecc = self.__bch.decode(p_data, packet['ecc'])
+            p_data = p_data[4:1280 - int.from_bytes(p_data[:4], 'big')]
+        else:
+            header = oaep_decrypt(self.__rsa, packet['header'])
+            decoder = AES.new(key, AES_MODE_LOOKUP[self.__aes_mode],
+                              iv=header[4:])
+            if packet['tag'] != blake2b(packet['data']).digest()[:16]:
+                raise ValueError("Block Corrupted!")
+            p_data = decoder.decrypt(packet['data'])
+            if self.__ratchet_mode == 'BLAKE0x0':
+                _, p_data, ecc = self.__bch.decode(p_data, packet['ecc'])
+            p_data = p_data[4:1280 - int.from_bytes(p_data[:4], 'big')]
+        self.ratchet_home(packet['ecc'])
+        return p_data
 
     def encode(self, data: bytes) -> bytes:
         '''
@@ -406,106 +517,20 @@ class DOPE():
         counter = -1
         for x in data_block:  # x : Data Batch
             counter += 1
-            key = self.key_end()
-            ecc = self.__bch.encode(x[4:])
-            if self.__end_param['HFLAG'][1] in ['SIV', 'GCM']:
-                nonce = get_random_bytes(16)
-                encoder = AES.new(key,
-                        AES_MODE_LOOKUP[self.__end_param['HFLAG'][1]],
-                        nonce=nonce)
-                encoder.update(b'DOPE')
-                header = b'DOPE' + nonce
-                data, tag = encoder.encrypt_and_digest(x[4:])
-                header = oaep_encrypt(self.__pan_key, header)
-                if self.__end_param['HFLAG'][2][-3:] == '0x0':
-                    packet = {
-                        'block': counter,
-                        'header': header,
-                        'pad_len': x[:4],
-                        'data': data,
-                        'tag': tag,
-                        'ecc': self.__bch.encode(data)
-                    }
-                    code_string.append(dumps(packet))
-                else:
-                    packet = {
-                        'block': counter,
-                        'header': header,
-                        'pad_len': x[:4],
-                        'data': data,
-                        'tag': tag,
-                        'ecc': ecc
-                    }
-                    code_string.append(dumps(packet))
-            else:
-                encoder = AES.new(key,
-                    AES_MODE_LOOKUP[self.__end_param['HFLAG'][1]])
-                header = b'DOPE' + encoder.iv
-                data = encoder.encrypt(x[4:])
-                header = oaep_encrypt(self.__pan_key, header)
-                if self.__end_param['HFLAG'][2][-3:] == '0x0':
-                    packet = {
-                        'block': counter,
-                        'header': header,
-                        'pad_len': x[:4],
-                        'data': data,
-                        'ecc': self.__bch.encode(data)
-                    }
-                    code_string.append(dumps(packet))
-                else:
-                    packet = {
-                        'block': counter,
-                        'header': header,
-                        'pad_len': x[:4],
-                        'data': data,
-                        'ecc': ecc
-                    }
-                    code_string.append(dumps(packet))
+            packet = self.encrypt(x, counter)
+            code_string.append(packet)
         packets = dumps(code_string)
-        packets_ecc = self.__bch.encode(packets)
-        self.ratchet_end(packets_ecc)
-        return compress(packets + packets_ecc)
+        return packets
 
     def decode(self, data: bytes) -> bytes:
         '''
         Decode Data in DOPE Data format
         by marshalling the byte string
         '''
-        pacl = self.__bch
-        data = decompress(data)
-        packet, packet_ecc = data[:-pacl.ecc_bytes], data[-pacl.ecc_bytes:]
-        flips, packet, packet_ecc = self.__bch.decode(packet, packet_ecc)
-        code_string = loads(packet)
+        code_string = loads(data)
         data = b''
         for x in code_string:
-            key = self.key_home()
-            packet = loads(x)
-            if self.__aes_mode in ['SIV', 'GCM']:
-                header = oaep_decrypt(self.__rsa, packet['header'])
-                decoder = AES.new(key,
-                                  AES_MODE_LOOKUP[self.__aes_mode],
-                                  nonce=header[4:])
-                decoder.update(header[:4])
-                p_data = decoder.decrypt_and_verify(packet['data'],
-                                                    packet['tag'])
-                if self.__ratchet_mode[-3:] == '0x0':
-                    _, p_data, ecc = self.__bch.decode(p_data, packet['ecc'])
-                p_data = p_data[:1280 - int.from_bytes(packet['pad_len'], 'big')]
-                if self.__ratchet_mode[-3:] == 'x0x':
-                    _, p_data, ecc = self.__bch.decode(p_data, packet['ecc'])
-                data += p_data
-            else:
-                header = oaep_decrypt(self.__rsa, packet['header'])
-                decoder = AES.new(key, AES_MODE_LOOKUP[self.__aes_mode],
-                                  iv=header[4:])
-                p_data = decoder.decrypt(packet['data'])
-                if self.__ratchet_mode[-3:] == '0x0':
-                    _, p_data, ecc = self.__bch.decode(p_data, packet['ecc'])
-                p_data = p_data[:1280 - int.from_bytes(packet['pad_len'], 'big')]
-                if self.__ratchet_mode[-3:] == 'x0x':
-                    _, p_data, ecc = self.__bch.decode(p_data, packet['ecc'])
-                data += p_data
-        self.ratchet_home(packet_ecc)
+            data += self.decrypt(x)
         return data
 
 

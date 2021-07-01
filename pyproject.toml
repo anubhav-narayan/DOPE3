@@ -1,8 +1,12 @@
 [tool.poetry]
 name = "dope3"
-version = "2.1.0"
+version = "3.1.0"
 description = "Python3 Implementation of DOPE Encryption"
-authors = ["Anubhav Mattoo <anubhavmattoo@outlook.com>"]
+authors = [
+	"Anubhav Mattoo <anubhavmattoo@outlook.com>",
+	"Shubham Patil <shubhampatil428@gmail.com>",
+	"Nikhil Samleti <nikhilsamleti99@gmail.com>"
+]
 license = "GPL-3.0-or-later"
 readme = './README.md'
 
